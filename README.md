@@ -139,7 +139,7 @@ Three ways for the Public Telecommunication Corporation (PTC) and Yemen Mobile (
 
 ### A5. Credits
 
-- **Project report:** Kholoud Saleh Hazzam, Anwaar Ahmed Al-Hamdani, Najla Abdulkhaleq Al-Zubairi, Leena Abdulbaset Al-Huribi — Electrical Engineering Department, Faculty of Engineering, Sana'a University.
+- **Team project:** Electrical Engineering Department, Faculty of Engineering, Sana'a University.
 - **Academic supervisor:** Dr. Ali Naji Nosary.
 - **Implementation and technical supervision:** Mohammed Mahyoub.
 - **Screenshots:** all screenshots in `docs/project/` are from the project's implementation.
