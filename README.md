@@ -1,20 +1,169 @@
-# IMS Lab — SIP/IMS Core, VoIP QoS & IPTV Multicast
+# IMS Multimedia Services — VoIP, IPTV & VoLTE
 
-A reproducible IP-multimedia lab built from open-source components and driven by one script:
+IP multimedia services built around an **IP Multimedia Subsystem (IMS)** core, in two parts:
 
-- **IMS core.** Two Kamailio instances act as **P-CSCF** and **S-CSCF**, and Asterisk acts as the **Application Server**. Registration uses HTTP-digest authentication. Calls are routed via the Path header, and service numbers are steered to the AS by an "initial filter criteria" rule.
-- **VoIP QoS.** G.711 calls run over a congested 10 Mbit/s trunk. They are tested with and without a DiffServ priority queue (media EF, SIP CS3). Voice quality is measured as loss, one-way delay, jitter, E-model MOS and call-setup time.
-- **IPTV.** A 2 Mbit/s H.264 channel is delivered to three set-top hosts, first as unicast and then as multicast with IGMP snooping. The test measures trunk load and checks every received frame.
+- **Part A — Project implementation.**
+  - **VoIP:** Cisco Unified Communications (CUCM 8.6 on VMware, three-router GNS3 voice network, branch CME, SCCP/SIP phones, Extension Mobility).
+  - **IPTV:** LAN streaming with VLC to laptops and phones.
+  - **VoLTE:** OPNET Modeler simulation of voice over an LTE-like access network connected to an IMS core and the PSTN.
+  - **Case study:** IMS integration between a fixed-line operator (PTC) and a mobile operator (Yemen Mobile).
+- **Part B — Reproducible open-source lab.**
+  - **IMS core:** Kamailio P-CSCF/S-CSCF and an Asterisk application server.
+  - **QoS:** DiffServ QoS for voice on a congested trunk.
+  - **IPTV:** multicast with IGMP snooping.
+  - **Measurement:** everything runs from one script with measured results.
 
-All numbers below come from `results/results.json`, produced by `experiments/run_lab.py`. SIP message logs, queue counters, per-packet delay series and the Kamailio / Asterisk logs are in `results/logs/`. Packet captures (`*.pcap`) are written there too when you run the lab; they are not committed to keep the repository small.
-
-**Stack:** Kamailio 5.7 · Asterisk 20 (PJSIP) · SIPp 3.7 · Mininet 2.3 · Open vSwitch 3.3 · Linux HTB / u32 · iptables DSCP · FFmpeg 6.1 · Python 3
-
-![Topology](docs/images/topology.svg)
+**Stack:** IMS · SIP · H.323 · Cisco CUCM 8.6 · Cisco CME · GNS3 · VMware · VLC · OPNET Modeler 14.5 · Kamailio · Asterisk · SIPp · Mininet · Open vSwitch · DiffServ · FFmpeg · Python
 
 ---
 
-## 1. Lab architecture
+## Part A — Project implementation
+
+### A1. VoIP: Cisco Unified Communications
+
+**Platform:**
+
+- **Call control:** CUCM 8.6 installed on VMware Workstation, managed from its CLI and the web administration pages.
+- **Voice network:** a three-router network built in GNS3 and bridged to the CUCM server.
+
+| Node | Role | Addressing |
+|---|---|---|
+| VGW | HQ voice gateway, H.323 toward CUCM (192.168.154.10) | 192.168.154.0/24 |
+| BR1 | Branch router running Cisco Unified **CME** | WAN 10.10.10.0/32 · LAN 192.168.20.0/24 |
+| PSTN | PSTN-side router | 192.168.30.0/24 |
+
+| CUCM on VMware (CLI) | CUCM web administration | GNS3 voice network |
+|---|---|---|
+| ![CUCM CLI](docs/project/01_cucm_cli_vmware.webp) | ![CUCM web](docs/project/02_cucm_web_admin.webp) | ![GNS3](docs/project/03_gns3_voice_topology.webp) |
+
+**Gateway and branch configuration:** full excerpts are in [`config/cisco/`](config/cisco/).
+
+- **Dial-peers.** VoIP dial-peers route each number range between CUCM, the branch and the PSTN, for example `9...` and `1339...` to CUCM, and `5...` and `3225...` to the PSTN side.
+- **Codec and signalling.**
+  - **Codec:** `voice class codec 5` with G.711 µ-law.
+  - **H.323:** `voice class h323 5`, with short H.225 timers so calls fail over quickly.
+  - **DTMF:** relayed over H.245.
+- **Interworking:** `allow-connections` for H.323↔H.323, H.323↔SIP and SIP↔SIP.
+- **Branch survivability:** BR1 runs `telephony-service` (CME). Branch phones keep internal calling if the WAN to CUCM fails, and calls to the HQ range go across the WAN when it is up.
+- **CUCM:**
+  - **Time:** NTP, with the Windows Time service as the phones' time source, plus Date/Time Groups.
+  - **Phones:** provisioned over TFTP.
+  - **Extension Mobility:** service, parameters, default and user device profiles, user association and phone subscription.
+- **Endpoints:** Cisco IP Communicator (SCCP), X-Lite and Media5-fone on Android (SIP).
+
+```cfg
+voice service voip
+ allow-connections h323 to h323
+ allow-connections h323 to sip
+ allow-connections sip to h323
+ allow-connections sip to sip
+!
+voice class codec 5
+ codec preference 1 g711ulaw
+!
+dial-peer voice 9 voip
+ destination-pattern 9...
+ voice-class codec 5
+ voice-class h323 5
+ session target ipv4:192.168.154.10
+ dtmf-relay h245-alphanumeric
+ no vad
+```
+
+| VGW dial-peers | VGW codec / H.323 / interworking | BR1 CME telephony-service | PSTN dial-peers |
+|---|---|---|---|
+| ![VGW](docs/project/04_gw_voip_dial_peers.webp) | ![Codec](docs/project/05_gw_codec_h323_interworking.webp) | ![CME](docs/project/06_br_cme_telephony_service.webp) | ![PSTN](docs/project/07_pstn_dial_peers.webp) |
+
+| Phones registered in CUCM | Media5-fone (SIP) on Android |
+|---|---|
+| ![Phones](docs/project/08_cucm_registered_phones.webp) | ![Media5](docs/project/09_media5_android_sip_phone.webp) |
+
+**Result:** calls completed end-to-end between CUCM, branch and PSTN phones with low delay and good voice quality.
+
+### A2. IPTV
+
+- **Streaming:** VLC streams over the LAN (HTTP and UDP), with optional transcoding to save bandwidth.
+- **Viewers:** laptops and mobile phones on the same network watched the channel by opening the stream address.
+
+| VLC network stream | Watching the stream on a phone |
+|---|---|
+| ![VLC](docs/project/10_vlc_network_stream.webp) | ![Mobile](docs/project/11_iptv_on_mobile.webp) |
+
+### A3. VoLTE: OPNET Modeler 14.5
+
+OPNET 14.5 has no native VoLTE model. The LTE access network was therefore built from the WiMAX (802.16e) model and tuned to behave like LTE.
+
+| Component | Value |
+|---|---|
+| Cells / base stations | 4 (eNodeB role), 1 km radius, 240 s simulation |
+| PHY | OFDMA 20 MHz profile, 2048 subcarriers, FDD |
+| Frequency | 10 GHz base, 50 MHz bandwidth |
+| Antenna | STC 2×1 MIMO |
+| QoS class | "Gold", UGS scheduling, classifier match = interactive voice |
+| Application | Voice, PCM-quality speech |
+| IMS core | P-CSCF, I-CSCF, S-CSCF (SIP proxies), HSS |
+| Interworking | ASN gateway, IP cloud, PSTN switch with two phones |
+| Mobility | mobile UE on a multi-cell trajectory |
+
+![OPNET topology](docs/project/12_opnet_ims_lte_pstn_topology.webp)
+
+| Voice traffic and cell handovers | Jitter |
+|---|---|
+| ![Handover](docs/project/16_opnet_handover_voice_traffic.webp) | ![Jitter](docs/project/17_opnet_jitter.webp) |
+| **Throughput** | **PSTN phones sending and receiving voice** |
+| ![Throughput](docs/project/19_opnet_throughput.webp) | ![PSTN](docs/project/20_opnet_pstn_voice_calls.webp) |
+
+**Observations:**
+
+- **Handovers:** voice-traffic dips line up with cell handovers along the UE trajectory.
+- **Jitter:** stayed close to zero.
+- **Delay:** access delay was a few milliseconds, higher only at the start of movement.
+- **PSTN interworking:** PSTN-side phones sent and received voice through the IMS core.
+
+### A4. Case study: IMS for a fixed-line and a mobile operator
+
+Three ways for the Public Telecommunication Corporation (PTC) and Yemen Mobile (YM) to adopt IMS, including interconnection with other operators over SIP and SS7:
+
+1. **NGN → IMS upgrade.** Some NGN components are reused and the rest are replaced, at about 70 % of the cost of a new IMS.
+2. **Converged core.** One core with two domains:
+   - **HSS / SLF:** one HSS per operator, or a shared HSS with two domains.
+   - **SBC:** one SBC with firewall per operator, or one SBC with two domains.
+   - **PCRF:** one per operator, or shared.
+   - **PTC side:** MGCF, AGCF and IM-MGW, with H.248 toward the MSAN.
+   - **Packet core:** a single EPC, with YM's RAN upgraded to eNodeB.
+3. **Two new IMS cores.** Each operator gets its own application servers, plus MVNO/VNO gateways and an eNodeB upgrade.
+
+| Separate HSS per operator with SLF | Shared HSS with two domains |
+|---|---|
+| ![Two HSS](docs/project/21_case_two_hss_with_slf.webp) | ![Shared HSS](docs/project/22_case_shared_hss.webp) |
+
+### A5. Credits
+
+- **Project report:** Kholoud Saleh Hazzam, Anwaar Ahmed Al-Hamdani, Najla Abdulkhaleq Al-Zubairi, Leena Abdulbaset Al-Huribi — Electrical Engineering Department, Faculty of Engineering, Sana'a University.
+- **Academic supervisor:** Dr. Ali Naji Nosary.
+- **Implementation and technical supervision:** Mohammed Mahyoub.
+- **Screenshots:** all screenshots in `docs/project/` are from the project's implementation.
+
+---
+
+## Part B — Reproducible open-source lab
+
+The same service areas, rebuilt with open-source tools so they can be run and measured on any Linux machine:
+
+- **IMS core.** Kamailio runs as the **P-CSCF** and the **S-CSCF**, and Asterisk as the **Application Server**. Registration uses HTTP-digest authentication, terminating calls are routed via Path, and service numbers go to the AS through an initial-filter-criteria rule.
+- **VoIP QoS.** G.711 calls run over a congested 10 Mbit/s trunk, with and without a DiffServ priority queue (media EF, SIP CS3).
+- **IPTV.** One channel goes to three set-top hosts, first as unicast and then as multicast with IGMP snooping.
+
+All numbers below come from `results/results.json`, produced by `experiments/run_lab.py`. The following are in `results/logs/`; packet captures (`*.pcap`) are also written there when you run the lab, but they are not committed:
+
+- SIP message logs
+- queue counters
+- per-packet delay series
+- Kamailio and Asterisk logs
+
+![Topology](docs/images/topology.svg)
+
+### B1. Lab architecture
 
 | Host | IP | Role |
 |---|---|---|
@@ -41,7 +190,7 @@ tools/make_rtp_pcap.py      G.711 A-law RTP stream (20 ms) for SIPp (generated o
 tools/ts_receiver.py        IPTV receiver: IGMP join, MPEG-TS continuity check
 ```
 
-### S-CSCF: authentication, iFC and terminating routing (excerpt)
+#### S-CSCF: authentication, iFC and terminating routing (excerpt)
 
 ```cfg
 route[REGISTRAR] {
@@ -64,7 +213,7 @@ route(RELAY);                                        # via Path -> P-CSCF -> UE
 
 ---
 
-## 2. Experiment 1: IMS registration, routing and AS services
+### B2. Experiment 1: IMS registration, routing and AS services
 
 | Check | Result |
 |---|---|
@@ -82,7 +231,7 @@ Every SIP message was captured on the host that sent it. The figure below is dra
 
 ---
 
-## 3. Experiment 2: VoIP QoS on a congested trunk
+### B3. Experiment 2: VoIP QoS on a congested trunk
 
 **Setup:**
 
@@ -128,7 +277,7 @@ tc filter add dev s2-eth7 parent 1: protocol ip prio 2 u32 match ip dsfield 0x60
 
 ---
 
-## 4. Experiment 3: IPTV, unicast vs multicast
+### B4. Experiment 3: IPTV, unicast vs multicast
 
 **Setup:**
 
@@ -150,7 +299,7 @@ tc filter add dev s2-eth7 parent 1: protocol ip prio 2 u32 match ip dsfield 0x60
 
 ---
 
-## 5. Run it
+### B5. Run it
 
 Requirements: Ubuntu 24.04 (VM, WSL2 or container), run as root.
 
@@ -165,7 +314,7 @@ For interactive use, run `sudo python3 topology/ims_topo.py`. This opens the Min
 
 Because the background traffic and the userspace switch compete for CPU, loss figures in Experiment 2 change from run to run. That is why each case is repeated and reported as a mean with its range.
 
-## Scope
+### B6. Scope of the lab
 
 - **What is implemented:** this lab covers the IMS control plane (P-CSCF / S-CSCF / AS), SIP and RTP, DiffServ QoS and IPTV delivery.
 - **What is simplified:**
@@ -176,4 +325,6 @@ Because the background traffic and the userspace switch compete for CPU, loss fi
 
 ---
 
-**Author:** Mohammed Mahyoub · [Portfolio](https://mahyoub88.github.io/) · [LinkedIn](https://www.linkedin.com/in/mohammed-mahyoub/) · [ORCID](https://orcid.org/0009-0003-5640-352X) · MIT License
+---
+
+**Author:** Mohammed Mahyoub · [Portfolio](https://mahyoub88.github.io/) · [LinkedIn](https://www.linkedin.com/in/mohammed-mahyoub/) · [ORCID](https://orcid.org/0009-0003-5640-352X) · MIT License (code and configuration in Part B)
