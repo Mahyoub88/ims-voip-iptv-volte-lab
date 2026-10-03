@@ -1,8 +1,8 @@
-# IMS Multimedia Services Lab — VoIP, IPTV & VoLTE
+# IMS Multimedia Services — VoIP, IPTV & VoLTE
 
 End-to-end IP multimedia environment covering **enterprise VoIP**, **IPTV streaming**, and **Voice over LTE (VoLTE)** over an **IP Multimedia Subsystem (IMS)** core — plus a study of how an IMS core could interconnect a fixed-line operator and a mobile operator.
 
-> Team project. I worked across all workstreams: the VoIP / Cisco UC lab, the VoLTE simulation, IPTV streaming, the operator-integration study, and the technical documentation.
+> Team project. I worked across all workstreams: the VoIP / Cisco UC deployment, the VoLTE performance analysis, IPTV streaming, the operator-integration study, and the technical documentation.
 
 **Stack:** IMS · SIP · H.323 · VoIP · Cisco CUCM 8.6 · Cisco CME · GNS3 · VMware · VoLTE · LTE / EPC · OPNET Modeler 14.5 · IPTV · VLC · QoS
 
@@ -19,7 +19,7 @@ End-to-end IP multimedia environment covering **enterprise VoIP**, **IPTV stream
 |---|---|---|
 | VGW | Voice gateway (HQ), H.323 toward CUCM | 192.168.154.1/24 |
 | BR1 | Branch router running **CME** | WAN link 10.10.10.1 · LAN 192.168.20.0/24 |
-| PSTN | Simulated PSTN | 192.168.30.1/24 |
+| PSTN | PSTN side | 192.168.30.1/24 |
 
 **Configuration**
 
