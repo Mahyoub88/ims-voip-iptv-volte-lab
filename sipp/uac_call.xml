@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!-- Originating UE: INVITE through P-CSCF -> S-CSCF, then G.711 A-law RTP
+     from a pcap file, then BYE along the recorded route set.
+     sipp -sf uac_call.xml -s <callee> -key caller <user> -key pcap <file>
+          -d <hold_ms> -m 1 <pcscf> -->
+<scenario name="IMS originating call">
+  <send retrans="500" start_rtd="setup">
+    <![CDATA[
+      INVITE sip:[service]@ims.lab SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      From: <sip:[caller]@ims.lab>;tag=[pid]SIPpTag00[call_number]
+      To: <sip:[service]@ims.lab>
+      Call-ID: [call_id]
+      CSeq: 1 INVITE
+      Contact: <sip:[caller]@[local_ip]:[local_port]>
+      Max-Forwards: 70
+      Subject: IMS lab call
+      Content-Type: application/sdp
+      Content-Length: [len]
+
+      v=0
+      o=[caller] 53655765 2353687637 IN IP[local_ip_type] [local_ip]
+      s=-
+      c=IN IP[media_ip_type] [media_ip]
+      t=0 0
+      m=audio [media_port] RTP/AVP 8
+      a=rtpmap:8 PCMA/8000
+      a=ptime:20
+    ]]>
+  </send>
+  <recv response="100" optional="true"/>
+  <recv response="180" optional="true" rtd="setup" start_rtd="answer"/>
+  <recv response="183" optional="true"/>
+  <recv response="200" rrs="true" rtd="answer"/>
+  <send>
+    <![CDATA[
+      ACK [next_url] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      From: <sip:[caller]@ims.lab>;tag=[pid]SIPpTag00[call_number]
+      To: <sip:[service]@ims.lab>[peer_tag_param]
+      [routes]
+      Call-ID: [call_id]
+      CSeq: 1 ACK
+      Contact: <sip:[caller]@[local_ip]:[local_port]>
+      Max-Forwards: 70
+      Content-Length: 0
+
+    ]]>
+  </send>
+  <nop>
+    <action>
+      <exec play_pcap_audio="[pcap]"/>
+    </action>
+  </nop>
+  <pause/>
+  <send retrans="500" start_rtd="bye">
+    <![CDATA[
+      BYE [next_url] SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      From: <sip:[caller]@ims.lab>;tag=[pid]SIPpTag00[call_number]
+      To: <sip:[service]@ims.lab>[peer_tag_param]
+      [routes]
+      Call-ID: [call_id]
+      CSeq: 2 BYE
+      Contact: <sip:[caller]@[local_ip]:[local_port]>
+      Max-Forwards: 70
+      Content-Length: 0
+
+    ]]>
+  </send>
+  <recv response="200" crlf="true" rtd="bye"/>
+</scenario>

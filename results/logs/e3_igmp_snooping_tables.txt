@@ -1,0 +1,11 @@
+== s1
+ port  VLAN  protocol  GROUP                Age
+    3     0  IGMPv3    239.1.1.1          17
+== s2
+ port  VLAN  protocol  GROUP                Age
+    6     0  IGMPv3    239.1.1.1          17
+    7     0  IGMPv3    239.1.1.1          16
+== s3
+ port  VLAN  protocol  GROUP                Age
+    3     0  IGMPv3    239.1.1.1          17
+    4     0  IGMPv3    239.1.1.1          16

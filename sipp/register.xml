@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!-- UE registration through the P-CSCF with HTTP-digest authentication.
+     sipp -sf register.xml -s <user> -au <user> -ap <password> -m 1 <pcscf> -->
+<scenario name="IMS REGISTER with digest auth">
+  <send retrans="500">
+    <![CDATA[
+      REGISTER sip:ims.lab SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      From: <sip:[service]@ims.lab>;tag=[pid]reg[call_number]
+      To: <sip:[service]@ims.lab>
+      Call-ID: [call_id]
+      CSeq: 1 REGISTER
+      Contact: <sip:[service]@[local_ip]:[local_port]>
+      Max-Forwards: 70
+      Supported: path
+      Expires: 600
+      Content-Length: 0
+
+    ]]>
+  </send>
+  <recv response="401" auth="true" rtd="true"/>
+  <send retrans="500">
+    <![CDATA[
+      REGISTER sip:ims.lab SIP/2.0
+      Via: SIP/2.0/[transport] [local_ip]:[local_port];branch=[branch]
+      From: <sip:[service]@ims.lab>;tag=[pid]reg[call_number]
+      To: <sip:[service]@ims.lab>
+      Call-ID: [call_id]
+      CSeq: 2 REGISTER
+      Contact: <sip:[service]@[local_ip]:[local_port]>
+      [authentication]
+      Max-Forwards: 70
+      Supported: path
+      Expires: 600
+      Content-Length: 0
+
+    ]]>
+  </send>
+  <recv response="200" rtd="true"/>
+  <ResponseTimeRepartition value="5, 10, 20, 50, 100"/>
+</scenario>

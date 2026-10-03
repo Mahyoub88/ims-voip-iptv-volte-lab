@@ -1,0 +1,518 @@
+{
+  "meta": {
+    "time": "2026-10-03 17:42:21",
+    "kamailio": "version: kamailio 5.7.4 (x86_64/linux)",
+    "asterisk": "Asterisk 20.6.0~dfsg+~cs6.13.40431414-2build5",
+    "sipp": "SIPp v3.7.2-TLS-SCTP-PCAP.",
+    "ovs": "ovs-vsctl (Open vSwitch) 3.3.9",
+    "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers",
+    "trunk_rate": "10mbit",
+    "background_rate": "12M",
+    "queue_pkts": 50,
+    "qos_repetitions": 3
+  },
+  "experiment1": {
+    "registrations": {
+      "1001": {
+        "host": "ue1",
+        "sipp_rc": 0,
+        "responses": [
+          "401 Unauthorized",
+          "200 OK"
+        ],
+        "register_to_200_ms": 4.09
+      },
+      "1002": {
+        "host": "ue2",
+        "sipp_rc": 0,
+        "responses": [
+          "401 Unauthorized",
+          "200 OK"
+        ],
+        "register_to_200_ms": 3.12
+      },
+      "1003": {
+        "host": "ue3",
+        "sipp_rc": 0,
+        "responses": [
+          "401 Unauthorized",
+          "200 OK"
+        ],
+        "register_to_200_ms": 2.37
+      },
+      "1004": {
+        "host": "ue4",
+        "sipp_rc": 0,
+        "responses": [
+          "401 Unauthorized",
+          "200 OK"
+        ],
+        "register_to_200_ms": 2.55
+      }
+    },
+    "negative": {
+      "wrong_password_1002": {
+        "sipp_rc": 1
+      },
+      "unknown_subscriber_1999": {
+        "sipp_rc": 1
+      },
+      "call_unregistered_1777": {
+        "sipp_rc": 1
+      },
+      "error_responses_seen": {
+        "401 Unauthorized": [
+          "REGISTER"
+        ],
+        "403 Unknown": [
+          "REGISTER"
+        ],
+        "404 Not": [
+          "BYE",
+          "INVITE"
+        ]
+      }
+    },
+    "calls": {
+      "1001_to_1003": {
+        "sipp_rc": 0,
+        "post_dial_delay_ms": 2.62,
+        "invite_to_200_ms": 3.76,
+        "sip_messages_in_dialog": 27,
+        "call_id": "1-6572@10.0.0.1"
+      },
+      "1002_to_600_echo": {
+        "sipp_rc": 0,
+        "post_dial_delay_ms": null,
+        "invite_to_200_ms": 4.17,
+        "sip_messages_in_dialog": 18,
+        "call_id": "1-6576@10.0.0.2",
+        "rtp_packets_from_as": 302,
+        "rtp_seconds_from_as": 6.0
+      },
+      "1004_to_700_announcement": {
+        "sipp_rc": 0,
+        "post_dial_delay_ms": null,
+        "invite_to_200_ms": 3.14,
+        "sip_messages_in_dialog": 18,
+        "call_id": "1-6580@10.0.0.4",
+        "rtp_packets_from_as": 1514,
+        "rtp_seconds_from_as": 30.3
+      }
+    }
+  },
+  "experiment2": {
+    "baseline": {
+      "summary": {
+        "loss_pct": {
+          "mean": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "delay_mean_ms": {
+          "mean": 0.67,
+          "min": 0.64,
+          "max": 0.69
+        },
+        "delay_p95_ms": {
+          "mean": 0.93,
+          "min": 0.91,
+          "max": 0.95
+        },
+        "jitter_ms": {
+          "mean": 0.17,
+          "min": 0.12,
+          "max": 0.21
+        },
+        "mos": {
+          "mean": 4.38,
+          "min": 4.38,
+          "max": 4.38
+        },
+        "invite_to_200_ms": {
+          "mean": 4.67,
+          "min": 4.2,
+          "max": 5.5
+        }
+      },
+      "runs": [
+        {
+          "packets_sent": 1000,
+          "packets_received": 1000,
+          "loss_pct": 0.0,
+          "delay_mean_ms": 0.64,
+          "delay_p95_ms": 0.91,
+          "delay_max_ms": 5.68,
+          "jitter_ms": 0.21,
+          "r_factor": 91.7,
+          "mos": 4.38,
+          "dscp_seen_at_receiver": [
+            46
+          ],
+          "sipp_rc": 0,
+          "invite_to_200_ms": 4.2,
+          "invite_transmissions": 1,
+          "trunk_queues": {
+            "20": {
+              "sent_pkts": 1007,
+              "dropped_pkts": 0
+            }
+          }
+        },
+        {
+          "packets_sent": 1000,
+          "packets_received": 1000,
+          "loss_pct": 0.0,
+          "delay_mean_ms": 0.69,
+          "delay_p95_ms": 0.95,
+          "delay_max_ms": 3.05,
+          "jitter_ms": 0.12,
+          "r_factor": 91.7,
+          "mos": 4.38,
+          "dscp_seen_at_receiver": [
+            46
+          ],
+          "sipp_rc": 0,
+          "invite_to_200_ms": 5.5,
+          "invite_transmissions": 1,
+          "trunk_queues": {
+            "20": {
+              "sent_pkts": 1006,
+              "dropped_pkts": 0
+            }
+          }
+        },
+        {
+          "packets_sent": 1000,
+          "packets_received": 1000,
+          "loss_pct": 0.0,
+          "delay_mean_ms": 0.68,
+          "delay_p95_ms": 0.94,
+          "delay_max_ms": 10.06,
+          "jitter_ms": 0.18,
+          "r_factor": 91.7,
+          "mos": 4.38,
+          "dscp_seen_at_receiver": [
+            46
+          ],
+          "sipp_rc": 0,
+          "invite_to_200_ms": 4.3,
+          "invite_transmissions": 1,
+          "trunk_queues": {
+            "20": {
+              "sent_pkts": 1006,
+              "dropped_pkts": 0
+            }
+          }
+        }
+      ]
+    },
+    "congested_fifo": {
+      "summary": {
+        "loss_pct": {
+          "mean": 36.07,
+          "min": 30.4,
+          "max": 45.3
+        },
+        "delay_mean_ms": {
+          "mean": 56.32,
+          "min": 56.21,
+          "max": 56.53
+        },
+        "delay_p95_ms": {
+          "mean": 57.86,
+          "min": 57.78,
+          "max": 57.98
+        },
+        "jitter_ms": {
+          "mean": 0.94,
+          "min": 0.67,
+          "max": 1.33
+        },
+        "mos": {
+          "mean": 1.83,
+          "min": 1.58,
+          "max": 1.99
+        },
+        "invite_to_200_ms": {
+          "mean": 211.3,
+          "min": 62.1,
+          "max": 507.5
+        }
+      },
+      "runs": [
+        {
+          "packets_sent": 1000,
+          "packets_received": 547,
+          "loss_pct": 45.3,
+          "delay_mean_ms": 56.53,
+          "delay_p95_ms": 57.98,
+          "delay_max_ms": 61.59,
+          "jitter_ms": 0.83,
+          "r_factor": 29.3,
+          "mos": 1.58,
+          "dscp_seen_at_receiver": [
+            46
+          ],
+          "sipp_rc": 0,
+          "invite_to_200_ms": 62.1,
+          "invite_transmissions": 1,
+          "trunk_queues": {
+            "20": {
+              "sent_pkts": 24462,
+              "dropped_pkts": 8337
+            }
+          }
+        },
+        {
+          "packets_sent": 1000,
+          "packets_received": 696,
+          "loss_pct": 30.4,
+          "delay_mean_ms": 56.21,
+          "delay_p95_ms": 57.78,
+          "delay_max_ms": 60.03,
+          "jitter_ms": 0.67,
+          "r_factor": 38.4,
+          "mos": 1.99,
+          "dscp_seen_at_receiver": [
+            46
+          ],
+          "sipp_rc": 0,
+          "invite_to_200_ms": 507.5,
+          "invite_transmissions": 1,
+          "trunk_queues": {
+            "20": {
+              "sent_pkts": 24167,
+              "dropped_pkts": 7862
+            }
+          }
+        },
+        {
+          "packets_sent": 1000,
+          "packets_received": 675,
+          "loss_pct": 32.5,
+          "delay_mean_ms": 56.23,
+          "delay_p95_ms": 57.83,
+          "delay_max_ms": 65.86,
+          "jitter_ms": 1.33,
+          "r_factor": 36.8,
+          "mos": 1.91,
+          "dscp_seen_at_receiver": [
+            46
+          ],
+          "sipp_rc": 0,
+          "invite_to_200_ms": 64.3,
+          "invite_transmissions": 1,
+          "trunk_queues": {
+            "20": {
+              "sent_pkts": 23747,
+              "dropped_pkts": 7602
+            }
+          }
+        }
+      ]
+    },
+    "congested_qos": {
+      "summary": {
+        "loss_pct": {
+          "mean": 1.07,
+          "min": 0.0,
+          "max": 3.2
+        },
+        "delay_mean_ms": {
+          "mean": 1.38,
+          "min": 0.51,
+          "max": 3.02
+        },
+        "delay_p95_ms": {
+          "mean": 4.45,
+          "min": 0.8,
+          "max": 11.59
+        },
+        "jitter_ms": {
+          "mean": 0.29,
+          "min": 0.13,
+          "max": 0.39
+        },
+        "mos": {
+          "mean": 4.27,
+          "min": 4.06,
+          "max": 4.38
+        },
+        "invite_to_200_ms": {
+          "mean": 5.57,
+          "min": 4.2,
+          "max": 7.7
+        }
+      },
+      "runs": [
+        {
+          "packets_sent": 1000,
+          "packets_received": 1000,
+          "loss_pct": 0.0,
+          "delay_mean_ms": 0.61,
+          "delay_p95_ms": 0.95,
+          "delay_max_ms": 7.0,
+          "jitter_ms": 0.13,
+          "r_factor": 91.7,
+          "mos": 4.38,
+          "dscp_seen_at_receiver": [
+            46
+          ],
+          "sipp_rc": 0,
+          "invite_to_200_ms": 7.7,
+          "invite_transmissions": 1,
+          "trunk_queues": {
+            "10": {
+              "sent_pkts": 1003,
+              "dropped_pkts": 0
+            },
+            "20": {
+              "sent_pkts": 22511,
+              "dropped_pkts": 7133
+            }
+          }
+        },
+        {
+          "packets_sent": 1000,
+          "packets_received": 1000,
+          "loss_pct": 0.0,
+          "delay_mean_ms": 0.51,
+          "delay_p95_ms": 0.8,
+          "delay_max_ms": 4.07,
+          "jitter_ms": 0.39,
+          "r_factor": 91.7,
+          "mos": 4.38,
+          "dscp_seen_at_receiver": [
+            46
+          ],
+          "sipp_rc": 0,
+          "invite_to_200_ms": 4.8,
+          "invite_transmissions": 1,
+          "trunk_queues": {
+            "10": {
+              "sent_pkts": 1003,
+              "dropped_pkts": 0
+            },
+            "20": {
+              "sent_pkts": 22501,
+              "dropped_pkts": 7276
+            }
+          }
+        },
+        {
+          "packets_sent": 1000,
+          "packets_received": 968,
+          "loss_pct": 3.2,
+          "delay_mean_ms": 3.02,
+          "delay_p95_ms": 11.59,
+          "delay_max_ms": 86.07,
+          "jitter_ms": 0.35,
+          "r_factor": 80.9,
+          "mos": 4.06,
+          "dscp_seen_at_receiver": [
+            46
+          ],
+          "sipp_rc": 0,
+          "invite_to_200_ms": 4.2,
+          "invite_transmissions": 1,
+          "trunk_queues": {
+            "10": {
+              "sent_pkts": 971,
+              "dropped_pkts": 3
+            },
+            "20": {
+              "sent_pkts": 22506,
+              "dropped_pkts": 7245
+            }
+          }
+        }
+      ]
+    }
+  },
+  "experiment3": {
+    "source": {
+      "frames": 375,
+      "MB": 4.14,
+      "video": "H.264 1280x720 25 fps, 2 Mbit/s + AAC, 15 s, MPEG-TS"
+    },
+    "unicast": {
+      "link_MB": {
+        "s2_to_s1": 4.28,
+        "s2_to_s3": 8.56,
+        "to_ue4_non_member": 0.0
+      },
+      "receivers": {
+        "tv1": {
+          "datagrams": 3353,
+          "bytes": 4140512,
+          "ts_packets": 22024,
+          "cc_errors": 0,
+          "duration_s": 14.52,
+          "frames_decoded": 375,
+          "frames_bit_exact": 375,
+          "frames_damaged_or_missing": 0
+        },
+        "tv2": {
+          "datagrams": 3353,
+          "bytes": 4140512,
+          "ts_packets": 22024,
+          "cc_errors": 0,
+          "duration_s": 14.52,
+          "frames_decoded": 375,
+          "frames_bit_exact": 375,
+          "frames_damaged_or_missing": 0
+        },
+        "tv3": {
+          "datagrams": 3353,
+          "bytes": 4140512,
+          "ts_packets": 22024,
+          "cc_errors": 0,
+          "duration_s": 14.51,
+          "frames_decoded": 375,
+          "frames_bit_exact": 375,
+          "frames_damaged_or_missing": 0
+        }
+      }
+    },
+    "multicast": {
+      "link_MB": {
+        "s2_to_s1": 4.28,
+        "s2_to_s3": 4.28,
+        "to_ue4_non_member": 0.0
+      },
+      "receivers": {
+        "tv1": {
+          "datagrams": 3353,
+          "bytes": 4140512,
+          "ts_packets": 22024,
+          "cc_errors": 0,
+          "duration_s": 14.52,
+          "frames_decoded": 375,
+          "frames_bit_exact": 375,
+          "frames_damaged_or_missing": 0
+        },
+        "tv2": {
+          "datagrams": 3353,
+          "bytes": 4140512,
+          "ts_packets": 22024,
+          "cc_errors": 0,
+          "duration_s": 14.52,
+          "frames_decoded": 375,
+          "frames_bit_exact": 375,
+          "frames_damaged_or_missing": 0
+        },
+        "tv3": {
+          "datagrams": 3353,
+          "bytes": 4140512,
+          "ts_packets": 22024,
+          "cc_errors": 0,
+          "duration_s": 14.52,
+          "frames_decoded": 375,
+          "frames_bit_exact": 375,
+          "frames_damaged_or_missing": 0
+        }
+      }
+    }
+  }
+}

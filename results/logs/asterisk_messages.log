@@ -1,0 +1,162 @@
+[Oct  3 13:49:14] Asterisk 20.6.0~dfsg+~cs6.13.40431414-2build5 built by nobody @ buildd.debian.org on a unknown running Linux on 2024-04-15 00:13:12 UTC
+[Oct  3 13:49:14] NOTICE[7578] loader.c: 354 modules will be loaded.
+[Oct  3 13:49:14] WARNING[7578] res_odbc.c: Unable to load config file res_odbc.conf
+[Oct  3 13:49:14] ERROR[7578] res_config_sqlite3.c: Missing config file 'res_config_sqlite3.conf'
+[Oct  3 13:49:14] ERROR[7578] config_options.c: Unable to load config file 'statsd.conf'
+[Oct  3 13:49:14] NOTICE[7578] res_statsd.c: Could not load statsd config; using defaults
+[Oct  3 13:49:14] ERROR[7578] config_options.c: Unable to load config file 'udptl.conf'
+[Oct  3 13:49:14] NOTICE[7578] udptl.c: Could not load udptl config; using defaults
+[Oct  3 13:49:14] ERROR[7578] config_options.c: Unable to load config file 'acl.conf'
+[Oct  3 13:49:14] NOTICE[7578] manager.c: Unable to open AMI configuration manager.conf, or configuration is invalid.
+[Oct  3 13:49:14] WARNING[7578] indications.c: Can't find indications config file indications.conf.
+[Oct  3 13:49:14] ERROR[7578] config_options.c: Unable to load config file 'features.conf'
+[Oct  3 13:49:14] NOTICE[7578] features_config.c: Could not load features config; using defaults
+[Oct  3 13:49:14] ERROR[7578] config_options.c: Unable to load config file 'cel.conf'
+[Oct  3 13:49:14] NOTICE[7578] cel.c: Failed to process CEL configuration; using defaults
+[Oct  3 13:49:14] ERROR[7578] config_options.c: Unable to load config file 'cdr.conf'
+[Oct  3 13:49:14] NOTICE[7578] cdr.c: Failed to process CDR configuration; using defaults
+[Oct  3 13:49:14] NOTICE[7578] cdr.c: CDR simple logging enabled.
+[Oct  3 13:49:14] WARNING[7578] ccss.c: Could not find valid ccss.conf file. Using cc_max_requests default
+[Oct  3 13:49:14] WARNING[7578] ccss.c: Could not find valid ccss.conf file. Using cc_[state]_devstate defaults
+[Oct  3 13:49:14] ERROR[7578] res_sorcery_config.c: Unable to load config file 'geolocation.conf'
+[Oct  3 13:49:14] ERROR[7578] res_sorcery_config.c: Unable to load config file 'geolocation.conf'
+[Oct  3 13:49:14] ERROR[7578] res_sorcery_config.c: Unable to load config file 'pjproject.conf'
+[Oct  3 13:49:14] ERROR[7578] res_pjsip_config_wizard.c: Unable to load config file 'pjsip_wizard.conf'
+[Oct  3 13:49:14] ERROR[7578] res_pjsip_config_wizard.c: Unable to load config file 'pjsip_wizard.conf'
+[Oct  3 13:49:14] ERROR[7578] res_pjsip_config_wizard.c: Unable to load config file 'pjsip_wizard.conf'
+[Oct  3 13:49:14] ERROR[7578] res_pjsip_config_wizard.c: Unable to load config file 'pjsip_wizard.conf'
+[Oct  3 13:49:14] ERROR[7578] res_sorcery_config.c: Unable to load config file 'stir_shaken.conf'
+[Oct  3 13:49:14] ERROR[7578] res_sorcery_config.c: Unable to load config file 'stir_shaken.conf'
+[Oct  3 13:49:14] ERROR[7578] res_sorcery_config.c: Unable to load config file 'stir_shaken.conf'
+[Oct  3 13:49:14] ERROR[7578] res_sorcery_config.c: Unable to load config file 'stir_shaken.conf'
+[Oct  3 13:49:14] ERROR[7578] res_sorcery_config.c: Unable to load config file 'aeap.conf'
+[Oct  3 13:49:14] NOTICE[7578] res_smdi.c: Unable to load config smdi.conf: SMDI disabled
+[Oct  3 13:49:14] NOTICE[7578] res_smdi.c: No SMDI interfaces are available to listen on, not starting SMDI listener.
+[Oct  3 13:49:14] ERROR[7578] file.c: Error opening directory - /tmp/ims-lab-run/ast/keys: No such file or directory
+[Oct  3 13:49:14] WARNING[7578] res_crypto.c: Unable to open key directory '/tmp/ims-lab-run/ast/keys'
+[Oct  3 13:49:14] WARNING[7578] res_musiconhold.c: No music on hold classes configured, disabling music on hold.
+[Oct  3 13:49:14] ERROR[7578] config_options.c: Unable to load config file 'xmpp.conf'
+[Oct  3 13:49:14] WARNING[7578] res_stun_monitor.c: Unable to load config res_stun_monitor.conf
+[Oct  3 13:49:14] ERROR[7578] res_phoneprov.c: Unable to load config phoneprov.conf
+[Oct  3 13:49:14] ERROR[7578] res_phoneprov.c: Unable to load provisioning profiles.
+[Oct  3 13:49:14] VERBOSE[7578] chan_sip.c: SIP channel loading...
+[Oct  3 13:49:14] NOTICE[7578] chan_sip.c: Unable to load config sip.conf
+[Oct  3 13:49:14] ERROR[7578] message.c: No 'sip' message technology found.
+[Oct  3 13:49:14] NOTICE[7578] chan_console.c: Unable to open configuration file console.conf!
+[Oct  3 13:49:14] ERROR[7578] config_options.c: Unable to load config file 'hep.conf'
+[Oct  3 13:49:14] NOTICE[7578] res_fax.c: Configuration file 'res_fax.conf' not found, using default options.
+[Oct  3 13:49:14] ERROR[7578] res_pjsip_config_wizard.c: Unable to load config file 'pjsip_wizard.conf'
+[Oct  3 13:49:14] ERROR[7578] config_options.c: Unable to load config file 'pjsip_notify.conf'
+[Oct  3 13:49:14] ERROR[7578] config_options.c: Unable to load config file 'res_parking.conf'
+[Oct  3 13:49:14] ERROR[7578] config_options.c: Unable to load config file 'agents.conf'
+[Oct  3 13:49:14] ERROR[7578] app_agent_pool.c: Unable to load config. Not loading module.
+[Oct  3 13:49:14] ERROR[7578] res_calendar.c: Unable to load config calendar.conf
+[Oct  3 13:49:14] ERROR[7578] config_options.c: Unable to load config file 'confbridge.conf'
+[Oct  3 13:49:14] ERROR[7578] app_confbridge.c: Unable to load config. Not loading module.
+[Oct  3 13:49:14] WARNING[7578] cel_manager.c: Failed to load configuration file. CEL manager Module not activated.
+[Oct  3 13:49:14] ERROR[7578] cdr_custom.c: Unable to load cdr_custom.conf. Not logging custom CSV CDRs.
+[Oct  3 13:49:14] WARNING[7578] cdr_csv.c: unable to load config: cdr.conf
+[Oct  3 13:49:14] NOTICE[7578] cel_tds.c: Unable to load TDS config for CELs: cel_tds.conf
+[Oct  3 13:49:14] WARNING[7578] cel_tds.c: cel_tds module had config problems; declining load
+[Oct  3 13:49:14] WARNING[7578] cdr_sqlite3_custom.c: Failed to load configuration file. Module not activated.
+[Oct  3 13:49:14] NOTICE[7578] cdr_tds.c: Unable to load TDS config for CDRs: cdr_tds.conf
+[Oct  3 13:49:14] WARNING[7578] cdr_manager.c: Failed to load configuration file. Module not activated.
+[Oct  3 13:49:14] WARNING[7578] cel_sqlite3_custom.c: Failed to load configuration file. Module not activated.
+[Oct  3 13:49:14] ERROR[7578] cel_custom.c: Unable to load cel_custom.conf. Not logging CEL to custom CSVs.
+[Oct  3 13:49:14] ERROR[7578] config_options.c: Unable to load config file 'res_http_media_cache.conf'
+[Oct  3 13:49:14] NOTICE[7578] res_http_media_cache.c: Could not load res_http_media_cache config; using defaults
+[Oct  3 13:49:14] WARNING[7578] app_festival.c: No such configuration file festival.conf
+[Oct  3 13:49:14] ERROR[7578] pbx_dundi.c: Unable to load config dundi.conf
+[Oct  3 13:49:14] WARNING[7578] app_voicemail.c: Failed to load configuration file.
+[Oct  3 13:49:14] ERROR[7578] chan_unistim.c: Unable to load config unistim.conf
+[Oct  3 13:49:14] ERROR[7578] res_clialiases.c: res_clialiases configuration file 'cli_aliases.conf' not found
+[Oct  3 13:49:14] ERROR[7578] pbx_lua.c: Error loading extensions.lua: cannot open '/tmp/ims-lab-run/ast/etc/extensions.lua' for reading: No such file or directory
+[Oct  3 13:49:14] WARNING[7578] res_snmp.c: Could not load res_snmp.conf
+[Oct  3 13:49:14] WARNING[7578] app_minivm.c: Failed to load configuration file. Module activated with default settings.
+[Oct  3 13:49:14] WARNING[7578] app_voicemail_odbc.c: Failed to load configuration file.
+[Oct  3 13:49:14] WARNING[7578] pbx_app.c: Already have an application 'VoiceMail'
+[Oct  3 13:49:14] WARNING[7578] pbx_app.c: Already have an application 'VoiceMailMain'
+[Oct  3 13:49:14] WARNING[7578] pbx_app.c: Already have an application 'VMAuthenticate'
+[Oct  3 13:49:14] WARNING[7578] pbx_app.c: Already have an application 'VoiceMailPlayMsg'
+[Oct  3 13:49:14] WARNING[7578] pbx_app.c: Already have an application 'VMSayName'
+[Oct  3 13:49:14] ERROR[7578] pbx_functions.c: Function VM_INFO already registered.
+[Oct  3 13:49:14] WARNING[7578] manager.c: Manager: Action 'VoicemailUsersList' already registered
+[Oct  3 13:49:14] WARNING[7578] manager.c: Manager: Action 'VoicemailUserStatus' already registered
+[Oct  3 13:49:14] WARNING[7578] manager.c: Manager: Action 'VoicemailRefresh' already registered
+[Oct  3 13:49:14] WARNING[7578] manager.c: Manager: Action 'VoicemailBoxSummary' already registered
+[Oct  3 13:49:14] WARNING[7578] manager.c: Manager: Action 'VoicemailMove' already registered
+[Oct  3 13:49:14] WARNING[7578] manager.c: Manager: Action 'VoicemailRemove' already registered
+[Oct  3 13:49:14] WARNING[7578] manager.c: Manager: Action 'VoicemailForward' already registered
+[Oct  3 13:49:14] ERROR[7578] app_voicemail_odbc.c: Failure registering applications, functions or tests
+[Oct  3 13:49:14] WARNING[7578] app_voicemail_imap.c: Failed to load configuration file.
+[Oct  3 13:49:14] ERROR[7578] pbx_functions.c: Function VM_INFO already registered.
+[Oct  3 13:49:14] ERROR[7578] app_voicemail_imap.c: Failure registering applications, functions or tests
+[Oct  3 13:49:14] NOTICE[7578] pbx_ael.c: File /tmp/ims-lab-run/ast/etc/extensions.ael not found; AEL declining load
+[Oct  3 13:49:14] ERROR[7578] app_amd.c: Configuration file amd.conf missing.
+[Oct  3 13:49:14] WARNING[7578] app_followme.c: No follow me config file (followme.conf), so no follow me
+[Oct  3 13:49:14] ERROR[7578] config_options.c: Unable to load config file 'prometheus.conf'
+[Oct  3 13:49:14] NOTICE[7578] app_queue.c: No queuerules.conf file found, queues will not follow penalty rules
+[Oct  3 13:49:14] NOTICE[7578] app_queue.c: No call queueing config file (queues.conf), so no call queues
+[Oct  3 13:49:14] WARNING[7578] loader.c: Some non-required modules failed to load.
+[Oct  3 13:49:14] WARNING[7578] loader.c: Module 'res_adsi' has been loaded but may be removed in a future release.
+[Oct  3 13:49:14] WARNING[7578] loader.c: Module 'app_adsiprog' has been loaded but may be removed in a future release.
+[Oct  3 13:49:14] WARNING[7578] loader.c: Module 'app_macro' has been loaded but was deprecated in Asterisk version 16 and will be removed in Asterisk version 21. Its replacement is 'app_stack (GoSub)'.
+[Oct  3 13:49:14] WARNING[7578] loader.c: Module 'app_getcpeid' has been loaded but may be removed in a future release.
+[Oct  3 13:49:14] ERROR[7578] loader.c: Error loading module 'res_ari_bridges.so': /usr/lib/x86_64-linux-gnu/asterisk/modules/res_ari_bridges.so: undefined symbol: stasis_app_control_add_role
+[Oct  3 13:49:14] ERROR[7578] loader.c: Error loading module 'res_ari_device_states.so': /usr/lib/x86_64-linux-gnu/asterisk/modules/res_ari_device_states.so: undefined symbol: stasis_app_device_state_to_json
+[Oct  3 13:49:14] ERROR[7578] loader.c: Error loading module 'res_stasis_playback.so': /usr/lib/x86_64-linux-gnu/asterisk/modules/res_stasis_playback.so: undefined symbol: stasis_app_control_publish
+[Oct  3 13:49:14] ERROR[7578] loader.c: Error loading module 'res_ari_events.so': /usr/lib/x86_64-linux-gnu/asterisk/modules/res_ari_events.so: undefined symbol: stasis_app_register_all
+[Oct  3 13:49:14] ERROR[7578] loader.c: Error loading module 'res_ari_applications.so': /usr/lib/x86_64-linux-gnu/asterisk/modules/res_ari_applications.so: undefined symbol: ast_ari_response_alloc_failed
+[Oct  3 13:49:14] ERROR[7578] loader.c: Error loading module 'res_stasis_answer.so': /usr/lib/x86_64-linux-gnu/asterisk/modules/res_stasis_answer.so: undefined symbol: stasis_app_send_command
+[Oct  3 13:49:14] ERROR[7578] loader.c: Error loading module 'res_ari_channels.so': /usr/lib/x86_64-linux-gnu/asterisk/modules/res_ari_channels.so: undefined symbol: stasis_app_control_silence_start
+[Oct  3 13:49:14] ERROR[7578] loader.c: Error loading module 'res_ari_sounds.so': /usr/lib/x86_64-linux-gnu/asterisk/modules/res_ari_sounds.so: undefined symbol: ast_ari_add_handler
+[Oct  3 13:49:14] ERROR[7578] loader.c: Error loading module 'res_stasis_recording.so': /usr/lib/x86_64-linux-gnu/asterisk/modules/res_stasis_recording.so: undefined symbol: stasis_app_control_publish
+[Oct  3 13:49:14] ERROR[7578] loader.c: Error loading module 'res_ari_recordings.so': /usr/lib/x86_64-linux-gnu/asterisk/modules/res_ari_recordings.so: undefined symbol: stasis_app_stored_recording_copy
+[Oct  3 13:49:14] ERROR[7578] loader.c: Error loading module 'res_ari_playbacks.so': /usr/lib/x86_64-linux-gnu/asterisk/modules/res_ari_playbacks.so: undefined symbol: stasis_app_playback_to_json
+[Oct  3 13:49:14] ERROR[7578] loader.c: Error loading module 'res_ari_endpoints.so': /usr/lib/x86_64-linux-gnu/asterisk/modules/res_ari_endpoints.so: undefined symbol: ast_ari_response_alloc_failed
+[Oct  3 13:49:14] ERROR[7578] loader.c: Error loading module 'res_stasis_device_state.so': /usr/lib/x86_64-linux-gnu/asterisk/modules/res_stasis_device_state.so: undefined symbol: stasis_app_unregister_event_source
+[Oct  3 13:49:14] ERROR[7578] loader.c: Error loading module 'res_ari_asterisk.so': /usr/lib/x86_64-linux-gnu/asterisk/modules/res_ari_asterisk.so: undefined symbol: ast_ari_response_alloc_failed
+[Oct  3 13:49:14] ERROR[7578] loader.c: Error loading module 'app_stasis.so': /usr/lib/x86_64-linux-gnu/asterisk/modules/app_stasis.so: undefined symbol: stasis_app_exec
+[Oct  3 13:49:14] ERROR[7578] loader.c: res_odbc declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: Declined modules which depend on res_odbc: res_config_odbc, cdr_odbc, cel_odbc, cdr_adaptive_odbc, func_odbc
+[Oct  3 13:49:14] ERROR[7578] loader.c: res_xmpp declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: Declined modules which depend on res_xmpp: chan_motif
+[Oct  3 13:49:14] ERROR[7578] loader.c: res_stun_monitor declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: res_phoneprov declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: Declined modules which depend on res_phoneprov: res_pjsip_phoneprov_provider
+[Oct  3 13:49:14] ERROR[7578] loader.c: chan_sip declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: chan_console declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: res_hep declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: Declined modules which depend on res_hep: res_hep_rtcp
+[Oct  3 13:49:14] ERROR[7578] loader.c: res_pjsip_notify declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: res_parking declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: app_agent_pool declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: res_calendar declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: Declined modules which depend on res_calendar: res_calendar_icalendar, res_calendar_ews, res_calendar_caldav, res_calendar_exchange
+[Oct  3 13:49:14] ERROR[7578] loader.c: app_confbridge declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: Declined modules which depend on app_confbridge: app_page
+[Oct  3 13:49:14] ERROR[7578] loader.c: cel_manager declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: cdr_radius declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: cdr_csv declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: cel_tds declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: cdr_sqlite3_custom declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: cdr_tds declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: cdr_manager declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: cel_sqlite3_custom declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: cel_radius declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: app_alarmreceiver declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: app_festival declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: pbx_dundi declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: chan_unistim declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: pbx_lua declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: Failed to resolve dependencies for res_stasis_snoop
+[Oct  3 13:49:14] ERROR[7578] loader.c: res_stasis_snoop declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: res_snmp declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: app_voicemail_odbc declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: app_voicemail_imap declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: pbx_ael declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: app_amd declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: app_followme declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: res_prometheus declined to load.
+[Oct  3 13:49:14] ERROR[7578] loader.c: app_queue declined to load.
+[Oct  3 13:49:14] VERBOSE[7578] asterisk.c: Asterisk Ready.

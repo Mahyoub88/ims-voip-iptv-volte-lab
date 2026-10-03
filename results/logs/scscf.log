@@ -1,0 +1,28 @@
+ 0(7575) INFO: <core> [core/sctp_core.c:74]: sctp_core_check_support(): SCTP API not enabled - if you want to use it, load sctp module
+ 0(7575) WARNING: <core> [core/socket_info.c:1773]: fix_hostname(): could not rev. resolve 10.0.0.11
+ 0(7575) INFO: <core> [core/tcp_main.c:5205]: init_tcp(): using epoll_lt as the io watch method (auto detected)
+Listening on 
+             udp: 10.0.0.11:5060
+Aliases: 
+             *: scscf.ims.lab:*
+             *: ims.lab:*
+
+ 0(7582) INFO: rr [../outbound/api.h:53]: ob_load_api(): unable to import bind_ob - maybe module is not loaded
+ 0(7582) INFO: rr [rr_mod.c:185]: mod_init(): outbound module not available
+ 0(7582) INFO: auth [auth_mod.c:333]: mod_init(): qop set, but nonce-count (nonce_count) support disabled
+ 0(7582) INFO: <core> [main.c:3189]: main(): processes (at least): 7 - shm size: 67108864 - pkg size: 8388608
+ 0(7582) INFO: <core> [core/udp_server.c:163]: probe_max_receive_buffer(): SO_RCVBUF is initially 1048576 for fd 4
+ 0(7582) INFO: <core> [core/udp_server.c:233]: probe_max_receive_buffer(): SO_RCVBUF is finally 1048576 on fd 4
+ 2(7584) INFO: <script>: S-CSCF: registered 1001 contact <sip:1001@10.0.0.1:5060>
+ 2(7584) INFO: <script>: S-CSCF: registered 1002 contact <sip:1002@10.0.0.2:5060>
+ 2(7584) INFO: <script>: S-CSCF: registered 1003 contact <sip:1003@10.0.0.3:5060>
+ 2(7584) INFO: <script>: S-CSCF: registered 1004 contact <sip:1004@10.0.0.4:5060>
+ 1(7583) INFO: <script>: S-CSCF: INVITE 1001 -> 1003 at sip:1003@10.0.0.3:5060 via sip:10.0.0.10;lr
+ 2(7584) INFO: <script>: S-CSCF: INVITE 1001 -> 1003 at sip:1003@10.0.0.3:5060 via sip:10.0.0.10;lr
+ 1(7583) INFO: <script>: S-CSCF: INVITE 1001 -> 1003 at sip:1003@10.0.0.3:5060 via sip:10.0.0.10;lr
+ 2(7584) INFO: <script>: S-CSCF: INVITE 1001 -> 1003 at sip:1003@10.0.0.3:5060 via sip:10.0.0.10;lr
+ 1(7583) INFO: <script>: S-CSCF: INVITE 1001 -> 1003 at sip:1003@10.0.0.3:5060 via sip:10.0.0.10;lr
+ 1(7583) INFO: <script>: S-CSCF: INVITE 1001 -> 1003 at sip:1003@10.0.0.3:5060 via sip:10.0.0.10;lr
+ 1(7583) INFO: <script>: S-CSCF: INVITE 1001 -> 1003 at sip:1003@10.0.0.3:5060 via sip:10.0.0.10;lr
+ 2(7584) INFO: <script>: S-CSCF: INVITE 1001 -> 1003 at sip:1003@10.0.0.3:5060 via sip:10.0.0.10;lr
+ 1(7583) INFO: <script>: S-CSCF: INVITE 1001 -> 1003 at sip:1003@10.0.0.3:5060 via sip:10.0.0.10;lr

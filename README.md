@@ -1,96 +1,179 @@
-# IMS Multimedia Services — VoIP, IPTV & VoLTE
+# IMS Lab — SIP/IMS Core, VoIP QoS & IPTV Multicast
 
-End-to-end IP multimedia environment covering **enterprise VoIP**, **IPTV streaming**, and **Voice over LTE (VoLTE)** over an **IP Multimedia Subsystem (IMS)** core — plus a study of how an IMS core could interconnect a fixed-line operator and a mobile operator.
+A reproducible IP-multimedia lab built from open-source components and driven by one script:
 
-> Team project. I worked across all workstreams: the VoIP / Cisco UC deployment, the VoLTE performance analysis, IPTV streaming, the operator-integration study, and the technical documentation.
+- **IMS core.** Two Kamailio instances act as **P-CSCF** and **S-CSCF**, and Asterisk acts as the **Application Server**. Registration uses HTTP-digest authentication. Calls are routed via the Path header, and service numbers are steered to the AS by an "initial filter criteria" rule.
+- **VoIP QoS.** G.711 calls run over a congested 10 Mbit/s trunk. They are tested with and without a DiffServ priority queue (media EF, SIP CS3). Voice quality is measured as loss, one-way delay, jitter, E-model MOS and call-setup time.
+- **IPTV.** A 2 Mbit/s H.264 channel is delivered to three set-top hosts, first as unicast and then as multicast with IGMP snooping. The test measures trunk load and checks every received frame.
 
-**Stack:** IMS · SIP · H.323 · VoIP · Cisco CUCM 8.6 · Cisco CME · GNS3 · VMware · VoLTE · LTE / EPC · OPNET Modeler 14.5 · IPTV · VLC · QoS
+All numbers below come from `results/results.json`, produced by `experiments/run_lab.py`. SIP message logs, queue counters, per-packet delay series and the Kamailio / Asterisk logs are in `results/logs/`. Packet captures (`*.pcap`) are written there too when you run the lab; they are not committed to keep the repository small.
+
+**Stack:** Kamailio 5.7 · Asterisk 20 (PJSIP) · SIPp 3.7 · Mininet 2.3 · Open vSwitch 3.3 · Linux HTB / u32 · iptables DSCP · FFmpeg 6.1 · Python 3
+
+![Topology](docs/images/topology.svg)
 
 ---
 
-## 1. VoIP — Cisco Unified Communications
+## 1. Lab architecture
 
-**Platform**
-
-- Cisco Unified Communications Manager (CUCM 8.6), deployed on VMware Workstation and managed from the CLI and the web admin GUI.
-- A GNS3 topology with three routers, bridged to the CUCM server:
-
-| Node | Role | Addressing |
+| Host | IP | Role |
 |---|---|---|
-| VGW | Voice gateway (HQ), H.323 toward CUCM | 192.168.154.1/24 |
-| BR1 | Branch router running **CME** | WAN link 10.10.10.1 · LAN 192.168.20.0/24 |
-| PSTN | PSTN side | 192.168.30.1/24 |
+| `pcscf` | 10.0.0.10 | **P-CSCF**: Kamailio stateful proxy. Record-Route, adds `Path` on REGISTER, forwards to S-CSCF |
+| `scscf` | 10.0.0.11 | **S-CSCF**: Kamailio registrar. Digest auth against the subscriber table (HSS stand-in), `lookup("location")` with Path, iFC → AS |
+| `as` | 10.0.0.12 | **AS**: Asterisk 20 / PJSIP. **600** = echo service, **700** = announcement service |
+| `ue1`–`ue4` | 10.0.0.1–4 | UEs (SIPp scenarios), subscribers 1001–1004 |
+| `iptv` | 10.0.0.20 | IPTV head-end (FFmpeg, MPEG-TS over UDP) |
+| `tv1`–`tv3` | 10.0.0.21–23 | Set-top receivers (`tools/ts_receiver.py`) |
+| `bg` → `sink` | .30 → .31 | 12 Mbit/s UDP background load (iperf3) |
 
-**Configuration**
+The three switches are Open vSwitch L2 learning switches, run in userspace so the lab also works without the OVS kernel module. In Experiment 2 the `s2 → s3` trunk is shaped to 10 Mbit/s with HTB.
 
-- **Dial-peers:** POTS and VoIP dial-peers with destination patterns that route calls between CUCM, the branch, and the PSTN.
-- **Codec and signalling:** `voice class codec` with G.711 µ-law; H.323 signalling toward CUCM; `allow-connections` for H.323↔H.323, H.323↔SIP, and SIP↔SIP interworking; DTMF relay over H.245.
-- **Branch survivability:** BR1 runs as a standalone CME (`telephony-service`). Branch phones keep internal calling if the WAN link to CUCM fails, and branch calls are routed into the CUCM directory when the link is up.
-- **CUCM:** NTP (Windows Time service as the phone NTP source) and Date/Time Groups; phone provisioning over TFTP.
-- **Endpoints:** Cisco IP Communicator (SCCP), X-Lite and Media5-fone on Android (SIP).
-- **Extension Mobility:** service activation, service parameters, phone service URL, default and user device profiles, user association, and phone subscription.
+```
+ims/kamailio/pcscf.cfg      P-CSCF routing logic
+ims/kamailio/scscf.cfg      S-CSCF registrar, digest auth, iFC, location lookup
+ims/asterisk/*.conf         AS: PJSIP trust of the S-CSCF + dialplan for 600 / 700
+sipp/*.xml                  UE scenarios: REGISTER (401 → auth → 200), originating call, terminating UE, AS call
+topology/ims_topo.py        Mininet topology
+experiments/run_lab.py      runs all three experiments, writes results/results.json
+experiments/pcap_tools.py   pcap parser, RFC 3550 jitter, one-way delay, ITU-T G.107 E-model
+experiments/make_figures.py builds the figures in docs/images/
+tools/make_rtp_pcap.py      G.711 A-law RTP stream (20 ms) for SIPp (generated on first run)
+tools/ts_receiver.py        IPTV receiver: IGMP join, MPEG-TS continuity check
+```
 
-**Result:** calls completed end-to-end with low delay and good voice quality.
+### S-CSCF: authentication, iFC and terminating routing (excerpt)
+
+```cfg
+route[REGISTRAR] {
+    if ($sht(subs=>$fU) == $null) { sl_send_reply("403", "Unknown subscriber"); exit; }
+    if (!pv_www_authenticate("ims.lab", "$sht(subs=>$fU)", "0")) {
+        www_challenge("ims.lab", "0");          # 401 + nonce
+        exit;
+    }
+    consume_credentials();
+    save("location");                           # binding stored with the P-CSCF Path
+}
+...
+if ($rU =~ "^(600|700)$" && $si != "10.0.0.12") {   # initial filter criteria
+    $du = AS_URI;                                    # -> Application Server
+    route(RELAY);
+}
+if (!lookup("location")) { sl_send_reply("404", "Not Registered"); exit; }
+route(RELAY);                                        # via Path -> P-CSCF -> UE
+```
 
 ---
 
-## 2. IPTV
+## 2. Experiment 1: IMS registration, routing and AS services
 
-- LAN video streaming with VLC over HTTP and UDP, including optional transcoding to save bandwidth.
-- The stream was received on laptops and on mobile phones on the same network as the voice gateway.
-
----
-
-## 3. VoLTE — OPNET Modeler 14.5
-
-OPNET 14.5 has no native VoLTE model, so the LTE access network was built from the WiMAX (802.16e) model and its parameters were tuned to behave like LTE.
-
-| Component | Value |
+| Check | Result |
 |---|---|
-| Cells / base stations | 4 (eNodeB role) |
-| Cell radius | 1 km |
-| PHY | OFDMA 20 MHz profile, 2048 subcarriers, FDD |
-| Frequency band | 10 GHz base, 50 MHz |
-| Antenna | STC 2×1 MIMO |
-| QoS class | "Gold", UGS scheduling, 5 Mbps max / 1 Mbps min sustained, 30 ms max latency |
-| Classifier | IP ToS = Interactive Voice (6) |
-| Application | Voice, PCM-quality speech |
-| IMS core | P-CSCF, I-CSCF, S-CSCF (SIP proxies), HSS |
-| Interworking | ASN gateway, IP cloud, PSTN switch with two phones |
-| Mobility | Mobile UE following a multi-cell trajectory (~46 min) |
+| REGISTER 1001–1004 via P-CSCF | `401 Unauthorized` → authenticated REGISTER → `200 OK` for all four. Took 2.4–4.1 ms from the first REGISTER to 200 OK |
+| Wrong password (1002) | rejected (second `401`) |
+| Unknown subscriber (1999) | `403 Unknown subscriber` |
+| Call to an unregistered user (1777) | `404 Not Registered` |
+| Call 1001 → 1003 (UE to UE) | 180 Ringing after **2.6 ms**, 200 OK after **3.8 ms**. Path: P-CSCF → S-CSCF → P-CSCF → UE |
+| 1002 → **600** (AS echo) | answered by Asterisk in 4.2 ms. 302 RTP packets (6.0 s) echoed back |
+| 1004 → **700** (AS announcement) | answered in 3.1 ms. 30.3 s prompt (1,514 RTP packets), then BYE from the AS |
 
-**Metrics:** voice traffic sent/received, jitter, packet-delay variation, end-to-end delay, WiMAX/LTE access delay, throughput, and MOS.
+Every SIP message was captured on the host that sent it. The figure below is drawn directly from those captures:
 
-**Observations**
-
-- Voice-traffic dips line up with cell handovers along the UE trajectory.
-- Jitter stayed close to zero.
-- Packet-delay variation was in the order of 10⁻⁵ s and fell as the session stabilised.
-- Access delay was a few milliseconds, with higher values only at the start of movement.
-- Throughput stayed around 180 kbps between handovers.
-- PSTN-side phones sent and received voice traffic through the IMS core successfully.
+![SIP call flow](docs/images/exp1_sip_call_flow.svg)
 
 ---
 
-## 4. Operator integration study (IMS)
+## 3. Experiment 2: VoIP QoS on a congested trunk
 
-This study compared three ways for a fixed-line operator and a mobile operator to adopt IMS, including interconnection with other operators over SIP and SS7:
+**Setup:**
 
-1. **NGN → IMS upgrade:** reuse some NGN components and replace the rest. Estimated at about 70% of the cost of a new IMS.
-2. **Converged core:** one core with two domains.
-   - HSS and SLF: one per operator, or a shared HSS with two domains.
-   - SBC with firewall: one per operator, or one with two domains.
-   - PCRF: one per operator, or shared.
-   - MGCF / AGCF / IM-MGW and MSAN (H.248) on the fixed side.
-   - A single EPC, with the mobile RAN upgraded to eNodeB.
-3. **Two new IMS cores**, each with its own application servers, plus MVNO/VNO gateways and an eNodeB upgrade.
+- **Call:** a 20 s G.711 A-law call from 1001 to 1003 (1,000 RTP packets).
+- **Congestion:** a 12 Mbit/s UDP flow is pushed through the same 10 Mbit/s trunk queue.
+- **Marking:** UEs mark media **DSCP EF (46)** with iptables and SIP **CS3 (24)**. The CSCFs mark relayed SIP CS3 (`tos=0x60`).
+- **Repetitions:** each case was run **3 times**.
+
+**Cases:**
+
+- **Idle trunk:** no background traffic.
+- **Congested, single FIFO:** one best-effort HTB class with a 50-packet queue.
+- **Congested, EF + CS3 priority class:** an HTB priority class (u32 match on DSCP) for EF and CS3. Everything else goes to the best-effort class.
+
+```bash
+tc qdisc add dev s2-eth7 root handle 1: htb default 20
+tc class add dev s2-eth7 parent 1: classid 1:1 htb rate 10mbit ceil 10mbit
+tc class add dev s2-eth7 parent 1:1 classid 1:10 htb rate 1mbit ceil 10mbit prio 0   # real-time
+tc class add dev s2-eth7 parent 1:1 classid 1:20 htb rate 9mbit ceil 10mbit prio 1   # best effort
+tc filter add dev s2-eth7 parent 1: protocol ip prio 1 u32 match ip dsfield 0xb8 0xfc flowid 1:10  # EF
+tc filter add dev s2-eth7 parent 1: protocol ip prio 2 u32 match ip dsfield 0x60 0xfc flowid 1:10  # CS3
+```
+
+| Case (mean of 3 calls, range) | RTP loss | One-way delay | Jitter (RFC 3550) | MOS (E-model) | Call setup (INVITE → 200) |
+|---|---|---|---|---|---|
+| Idle trunk | 0 % | 0.67 ms | 0.17 ms | 4.38 | 4.7 ms |
+| Congested, single FIFO | **36.1 %** (30.4–45.3) | **56.3 ms** | 0.94 ms | **1.83** (1.58–1.99) | **211 ms** (62–508) |
+| Congested, EF + CS3 priority | 1.1 % (0–3.2) | 1.4 ms (0.5–3.0) | 0.29 ms | **4.27** (4.06–4.38) | 5.6 ms |
+
+![MOS](docs/images/exp2_mos.svg)
+![Loss](docs/images/exp2_loss.svg)
+![Delay per packet](docs/images/exp2_delay_series.svg)
+
+**Reading the results:**
+
+- **FIFO case.** The voice packets share a full 50-packet FIFO with the bulk flow. Every packet waits about 56 ms (50 × 1400 B at 10 Mbit/s), a third of them are dropped, and the call drops to "poor" quality.
+- **Signalling.** The SIP INVITE / 200 OK are delayed by retransmissions in the FIFO case.
+- **Priority class.** In the priority-class case the trunk queue counters show the EF/CS3 class sent the voice traffic with **0, 0 and 3** drops across the three calls. The best-effort class meanwhile dropped about 7,200 packets per call.
+- **The 3.2 % loss in run 3.** Most of these packets never reached the trunk queue: that call's real-time class counted only 971 packets. They were lost earlier, most likely in the userspace software switch, which shares the CPU with the 12 Mbit/s load.
+- **Data files.** Per-call counters are in `results/logs/e2_*_tc.txt`, and the per-packet delays of run 1 are in `results/logs/e2_*_r1_delay_series.json`.
+
+**MOS calculation:** ITU-T G.107 E-model, simplified, with G.711 + PLC (Ie = 0, Bpl = 25.1). A fixed 60 ms is added for packetisation and the de-jitter buffer. One-way delay comes from matching RTP sequence numbers in the caller and callee captures, which share one clock.
 
 ---
 
-## Topics covered
+## 4. Experiment 3: IPTV, unicast vs multicast
 
-IMS architecture (transport, control, and application layers), CSCF roles, HSS, SLF, PDF/PCRF, MRF, BGCF, MGCF/MGW, SGW, and IM-SSF. Protocols: SIP, SDP, RTP/RTCP, Diameter, RADIUS, H.323, H.248/Megaco, MGCP, COPS, SigComp, SIGTRAN, SCTP, XCAP, and TLS. LTE/EPC: MME, S-GW, P-GW, HSS, and PCRF. Voice-over-LTE options: CSFB, SVLTE, VoLTE (GSMA IR.92), and SRVCC.
+**Setup:**
+
+- **Programme:** one 15 s channel — H.264 1280×720 at 25 fps, 2 Mbit/s, plus AAC audio, in MPEG-TS over UDP.
+- **Receivers:** sent to tv1 (behind s1) and to tv2 and tv3 (behind s3).
+- **Multicast configuration:** IGMP snooping is enabled on all three switches with unregistered flooding off. The access switches forward IGMP reports up their trunk, so the core learns which trunks have viewers.
+
+| | Trunk s2 → s1 | Trunk s2 → s3 | Port to ue4 (no viewer) | Frames received bit-exact | TS continuity errors |
+|---|---|---|---|---|---|
+| Unicast (3 streams) | 4.28 MB | **8.56 MB** | 0 MB | 375/375 on each set-top | 0 |
+| Multicast 239.1.1.1 | 4.28 MB | **4.28 MB** | 0 MB | 375/375 on each set-top | 0 |
+
+![IPTV link bytes](docs/images/exp3_iptv_link_bytes.svg)
+
+- **Bandwidth.** Multicast halves the load on the trunk that serves two viewers, and the core sends one copy per trunk.
+- **Snooping.** IGMP snooping keeps the stream off ports with no viewer.
+- **Integrity.** Every decoded frame on every set-top matched the transmitted frame (frame MD5 comparison).
+- **Snooping tables.** The tables captured during the stream are in `results/logs/e3_igmp_snooping_tables.txt`.
 
 ---
 
-**Author:** Mohammed Mahyoub · [Portfolio](https://mahyoub88.github.io/) · [LinkedIn](https://www.linkedin.com/in/mohammed-mahyoub/) · [ORCID](https://orcid.org/0009-0003-5640-352X)
+## 5. Run it
+
+Requirements: Ubuntu 24.04 (VM, WSL2 or container), run as root.
+
+```bash
+sudo bash setup.sh                          # Mininet, OVS, Kamailio, Asterisk, SIPp, FFmpeg, ...
+sudo python3 experiments/run_lab.py         # all experiments, about 10 minutes
+sudo python3 experiments/run_lab.py --only 2   # a single experiment, merged into results.json
+python3 experiments/make_figures.py         # rebuild docs/images/
+```
+
+For interactive use, run `sudo python3 topology/ims_topo.py`. This opens the Mininet CLI, where you can start the core by hand using the commands in `run_lab.py`.
+
+Because the background traffic and the userspace switch compete for CPU, loss figures in Experiment 2 change from run to run. That is why each case is repeated and reported as a mean with its range.
+
+## Scope
+
+- **What is implemented:** this lab covers the IMS control plane (P-CSCF / S-CSCF / AS), SIP and RTP, DiffServ QoS and IPTV delivery.
+- **What is simplified:**
+  - The HSS is a static subscriber table inside the S-CSCF.
+  - The I-CSCF role is folded into the S-CSCF.
+  - There is no LTE radio or EPC, so VoLTE-specific bearers (QCI 1/5) appear here only as their DiffServ equivalents.
+- **Further reading.** The IMS / VoLTE architecture background (CSCF roles, HSS, PCRF, EPC, IR.92, SRVCC) is described in standard references such as 3GPP TS 23.228 and GSMA IR.92.
+
+---
+
+**Author:** Mohammed Mahyoub · [Portfolio](https://mahyoub88.github.io/) · [LinkedIn](https://www.linkedin.com/in/mohammed-mahyoub/) · [ORCID](https://orcid.org/0009-0003-5640-352X) · MIT License
