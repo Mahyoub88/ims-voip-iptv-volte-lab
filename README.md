@@ -1,5 +1,7 @@
 # IMS Multimedia Services — VoIP, IPTV & VoLTE
 
+**Project author and sole implementer:** Mohammed Mahyoub.
+
 IP multimedia services built around an **IP Multimedia Subsystem (IMS)** core, in two parts:
 
 - **Part A — Project implementation.**
@@ -137,11 +139,9 @@ Three ways for the Public Telecommunication Corporation (PTC) and Yemen Mobile (
 |---|---|
 | ![Two HSS](docs/project/21_case_two_hss_with_slf.webp) | ![Shared HSS](docs/project/22_case_shared_hss.webp) |
 
-### A5. Credits
+### A5. Project authorship
 
-- **Team project:** Electrical Engineering Department, Faculty of Engineering, Sana'a University.
-- **Academic supervisor:** Dr. Ali Naji Nosary.
-- **Implementation and technical supervision:** Mohammed Mahyoub.
+- **Design, implementation, testing and documentation:** Mohammed Mahyoub.
 - **Screenshots:** all screenshots in `docs/project/` are from the project's implementation.
 
 ---
