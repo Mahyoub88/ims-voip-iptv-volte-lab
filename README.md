@@ -1,6 +1,14 @@
 # IMS Multimedia Services — VoIP, IPTV & VoLTE
 
-**Project author and sole implementer:** Mohammed Mahyoub.
+## Illustrated engineering guide
+
+[Read the full engineering guide](docs/engineering-guide.md) for architecture, workflow, design rationale, evidence notes and the source gallery.
+
+![Engineering overview](docs/overview/architecture.svg)
+
+*Explanatory diagram added for this write-up.*
+
+**Team project — contributor:** Mohammed Mahyoub. See the documented scope below.
 
 IP multimedia services built around an **IP Multimedia Subsystem (IMS)** core, in two parts:
 
