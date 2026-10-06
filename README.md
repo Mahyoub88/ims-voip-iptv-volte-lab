@@ -344,3 +344,11 @@ Project-specific diagrams, source media and implementation context:
 - [IMS Multimedia Services — VoIP, IPTV & VoLTE](https://mahyoub88.github.io/projects/proj-ims-voip-volte/)
 
 [Browse all engineering case studies](https://mahyoub88.github.io/projects/)
+
+## Additional technical explanation
+
+[Read the illustrated system-boundary guide](docs/reference-guide/README.md) for component responsibilities, integration checks and credited reference context.
+
+![System-boundary explanation](docs/reference-guide/system-boundaries.png)
+
+*New explanatory diagram; source attribution and interpretation are provided in the companion guide.*
