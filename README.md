@@ -1,12 +1,7 @@
 # IMS Multimedia Services — VoIP, IPTV & VoLTE
 
-## Illustrated engineering guide
+[Read case study](https://mahyoub88.github.io/projects/proj-ims-voip-volte/) · [Project index](docs/PROJECTS.md) · [Engineering guide](docs/engineering-guide.md)
 
-[Read the full engineering guide](docs/engineering-guide.md) for architecture, workflow, design rationale, evidence notes and the source gallery.
-
-![Engineering overview](docs/overview/architecture.svg)
-
-*Explanatory diagram added for this write-up.*
 
 **Team project — contributor:** Mohammed Mahyoub. See the documented scope below.
 
@@ -335,15 +330,8 @@ Because the background traffic and the userspace switch compete for CPU, loss fi
 
 ---
 
-**Author:** Mohammed Mahyoub · [Portfolio](https://mahyoub88.github.io/) · [LinkedIn](https://www.linkedin.com/in/mohammed-mahyoub/) · [ORCID](https://orcid.org/0009-0003-5640-352X) · MIT License (code and configuration in Part B)
+**Author:** Mohammed Mahyoub · [Portfolio](https://mahyoub88.github.io/projects/) · [LinkedIn](https://www.linkedin.com/in/mohammed-mahyoub/) · [ORCID](https://orcid.org/0009-0003-5640-352X) · MIT License (code and configuration in Part B)
 
-## Illustrated project pages
-
-Project-specific diagrams, source media and implementation context:
-
-- [IMS Multimedia Services — VoIP, IPTV & VoLTE](https://mahyoub88.github.io/projects/proj-ims-voip-volte/)
-
-[Browse all engineering case studies](https://mahyoub88.github.io/projects/)
 
 ## Additional technical explanation
 
